@@ -1,0 +1,45 @@
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+name: Create Release
+
+jobs:
+  build:
+    name: C
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, windows-2019, macos-10.15]
+        browser-type: [firefox, chromium, webkit]
+        headfulness: [headless, headful]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install webkit dependencies
+        if: matrix.os == 'ubuntu-18.04' && matrix.browser-type == 'webkit'
+        run: ./webkit_dependencies.sh
+      - name: Read node version
+        id: node-version
+        run: echo "##[set-output name=NODE-VERSION;]$(cat .nvmrc)"
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.node-version.outputs.NODE-VERSION }}"
+      - name: Install dependencies
+        run: npm install
+      - name: Create screenshots
+        run: |
+          if [[ $OS == "ubuntu-18.04" && $HEADFULNESS == "headful" ]]; then
+            xvfb-run --auto-servernum node index.js
+          else
+            node index.js
+          fi
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OS: ${{ matrix.os }}
+          BROWSER_TYPE: ${{ matrix.browser-type }}
+          HEADFULNESS: ${{ matrix.headfulness }}

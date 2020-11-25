@@ -1,0 +1,10 @@
+{
+  "name": "fit-to-screenshot",
+  "version": "1.0.0",
+  "dependencies": {
+    "@cliqz/adblocker-playwright": "^1.18.7",
+    "@octokit/core": "^3.2.1",
+    "node-fetch": "^2.6.1",
+    "playwright": "^1.6.2"
+  }
+}
