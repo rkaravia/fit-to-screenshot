@@ -18,6 +18,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Set screen resolution
+        if: matrix.os == 'macos-10.15' && matrix.browser-type == 'webkit' && matrix.headfulness == 'headful'
+        # See https://github.com/actions/virtual-environments/issues/393
+        run: '"/Library/Application Support/VMware Tools/vmware-resolutionSet" 8192 8192'
       - name: Install webkit dependencies
         if: matrix.os == 'ubuntu-18.04' && matrix.browser-type == 'webkit'
         run: ./webkit_dependencies.sh
